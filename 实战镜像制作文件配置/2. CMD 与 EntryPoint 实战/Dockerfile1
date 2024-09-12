@@ -1,0 +1,7 @@
+FROM busybox
+CMD echo "hello world"
+CMD echo "hello zxj2022"
+# 然后编译镜像，运行查看结果，可以看到第一个 CMD 被覆盖了
+# 编译指令: docker build -t cmd1:v0.1 -f Dockerfile1 .
+# 运行指令: docker run --rm cmd1:v0.1
+# docker run cmd1:v0.1 echo hello zxj2 参数会覆盖 CMD 指令 结果为 hello zxj2

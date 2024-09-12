@@ -1,0 +1,8 @@
+FROM busybox
+ENTRYPOINT echo "hello world"
+ENTRYPOINT echo "hello zxj2022"
+# 然后编译镜像，运行查看结果，可以看到第一个 ENTRYPOINT 被覆盖了
+# 编译指令: docker build -t entrypoint1:v0.1 -f Dockerfile2 .
+# 运行指令: docker run --rm entrypoint1:v0.1
+# docker run entrypoint1:v0.1 echo hello zxj2 参数不会覆盖 ENTRYPOINT 指令,结果为 hello zxj2022
+# docker run --entrypoint '/bin/sh' entrypoint1:v0.1 -c "echo hello xxxx" 会覆盖 ENTRYPOINT 指令,结果为 hello xxxx
