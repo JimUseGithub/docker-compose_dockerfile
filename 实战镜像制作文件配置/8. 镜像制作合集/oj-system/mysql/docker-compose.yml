@@ -1,0 +1,65 @@
+services:
+  mysql-master:
+    build: # 构建镜像, docker-compose up 时会自动构建镜像
+      context: ./ # 上下文路径
+      dockerfile: ./master/Dockerfile-master # Dockerfile 文件路径
+    image: mysqlmaster:v1.0 # 镜像名称, 如果镜像不存在, 会依据 build 中对应的 Dockerfile 构建镜像
+    restart: always 
+    container_name: mysql-master # 容器名称
+    volumes:
+      - ./mastervarlib:/var/lib/mysql # 挂载目录
+    ports:
+      - 9306:3306 # 端口映射
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    privileged: true # 特权模式
+    command: ['--server-id=1', # 启动命令
+              '--log-bin=master-bin', # 开启二进制日志
+              '--binlog-ignore-db=mysql', # 忽略 mysql 库
+              '--binlog_cache_size=256M', # 二进制日志缓存大小
+              '--binlog_format=mixed',    # 二进制日志格式
+              '--lower_case_table_names=1', # 表名大小写不敏感
+              '--character-set-server=utf8', # 字符集
+              '--collation-server=utf8_general_ci'] # 校对规则
+  mysql-slave:
+    build:
+      context: ./
+      dockerfile: ./slave/Dockerfile-slave
+    image: mysqlslave:v1.0
+    restart: always
+    container_name: mysql-slave
+    volumes:
+      - ./slavevarlib:/var/lib/mysql
+    ports:
+      - 9307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    privileged: true
+    command: ['--server-id=2',
+              '--relay_log=slave-relay',
+              '--lower_case_table_names=1',
+              '--character-set-server=utf8',
+              '--collation-server=utf8_general_ci']
+    depends_on:
+      - mysql-master
+  mysql-slave2:
+    build:
+      context: ./
+      dockerfile: ./slave/Dockerfile-slave
+    image: mysqlslave:v1.0
+    restart: always
+    container_name: mysql-slave2
+    volumes:
+      - ./slavevarlib2:/var/lib/mysql
+    ports:
+      - 9308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    privileged: true
+    command: ['--server-id=3',
+              '--relay_log=slave-relay',
+              '--lower_case_table_names=1',
+              '--character-set-server=utf8',
+              '--collation-server=utf8_general_ci']
+    depends_on:
+      - mysql-master

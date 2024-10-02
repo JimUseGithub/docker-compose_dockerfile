@@ -1,0 +1,5 @@
+FROM mysql:5.7
+# 设置中文
+ENV LANG C.UTF-8
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+COPY ./slave/slave.sql /docker-entrypoint-initdb.d
