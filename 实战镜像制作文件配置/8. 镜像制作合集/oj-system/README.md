@@ -1,45 +1,25 @@
-# 实战目的
-通过 dockerfile 和 docker-compose 完成微服务的搭建，核心功能是实现用户管理微服务，整体拓扑如下：
+# 介绍
 
-![整体拓扑](./image/1.png)
+使用 dockerfile 和 docker-compose.yml 部署在线oj系统
 
 
-# 实战步骤
 
-> 1. 方案设计
 
-a. 整体架构
-系统整体架构
-![整体架构](./image/2.png)
+# 目录介绍
 
-b. 库表设计
-![库表设计](./image/3.png)
 
-对应的 sql 语句
-```sql
-drop database if exists test;
-CREATE DATABASE `test` DEFAULT CHARACTER SET utf8mb4 ;
-use `test`;
-CREATE TABLE `users` (
-    `sno` int(11) PRIMARY KEY,
-    `sname` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT INTO users (sno,sname) VALUES
-                            (1,'pony'),
-                            (2,'maxhou');
-```
 
-c. 接口设计，用户管理一般有用户的增加，用户编辑，用户查询，用户删除等功能，我们实现其中一个用户查询功能。用户查询功能的逻辑如下：
+[对应的 sql 语句](./mysql/oj-init.sql)
 
-![](./image/4.png)
 
-> 2. 创建相关目录
+
+
 
 目录说明
 
 - nginx: 负载均衡
 - app: 
-    - usr: 存放 java Spring 管理用户的微服务
+    - oj-system: 存放 java Spring oj-system微服务
 - redis: 缓存
 - mysql: 持久化
 
@@ -47,9 +27,30 @@ c. 接口设计，用户管理一般有用户的增加，用户编辑，用户�
 
 # 使用说明
 
+### 1. 创建容器
+
 在当前目录下: 
 1. docker compose build
 2. docker compose up -d
 
-访问网页: 
-http://{你的ip地址}:8888/userGet/1
+### 2. 数据库数据的准备
+
+进入 mysql-master 容器: 
+```shell
+docker exec -it mysql-master bash
+```
+
+连接数据库: 
+```shell
+mysql -uroot -proot
+```
+
+执行 sql 语句
+
+[对应的 sql 语句](./mysql/oj-init.sql)
+
+### 3. 服务使用
+
+访问网页: http://172.20.45.60:8888/  
+
+这是使用了 nginx 反向代理功能
